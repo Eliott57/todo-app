@@ -7,17 +7,17 @@
     <div class="hidden sm:flex-1 sm:flex sm:items-center sm:justify-between">
       <div>
         <p class="text-sm text-gray-700">
-          <span class="font-medium">{{ totalOfCurrentTasks }}</span>
+          <span class="font-medium">{{ (getCurrentPage-1) * 5 + getDisplayedTodos.length }}</span>
           sur
-          <span class="font-medium">{{ totalOfTasks }}</span>
+          <span class="font-medium">{{ getTodos.length }}</span>
           résultats
         </p>
       </div>
       <div>
         <nav class="relative z-0 inline-flex rounded-md shadow-sm -space-x-px" aria-label="Pagination">
           <button class="relative inline-flex items-center px-2 py-2 rounded-l-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50"
-                  @click="previousPage"
-                  :disabled="(currentPage - 1) <= 0">
+                  @click="decrementCurrentPage"
+                  :disabled="(getCurrentPage - 1) <= 0">
             <span class="sr-only">Previous</span>
             <!-- Heroicon name: solid/chevron-left -->
             <svg class="h-5 w-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
@@ -26,15 +26,15 @@
           </button>
 
           <!-- Current: "z-10 bg-indigo-50 border-indigo-500 text-indigo-600", Default: "bg-white border-gray-300 text-gray-500 hover:bg-gray-50 relative inline-flex items-center px-4 py-2 border text-sm font-medium" -->
-          <button v-for="page in getPagination" :key="page" aria-current="page"
-                  @click="changeCurrentPage(page)"
-                  :class="[page === currentPage ? 'z-10 bg-indigo-50 border-indigo-500 text-indigo-600 relative inline-flex items-center px-4 py-2 border text-sm font-medium' : 'bg-white border-gray-300 text-gray-500 hover:bg-gray-50 relative inline-flex items-center px-4 py-2 border text-sm font-medium']">
+          <button v-for="page in Math.ceil(getTodos.length / 5)" :key="page" aria-current="page"
+                  @click="setCurrentPage(page)"
+                  :class="page === getCurrentPage ? 'z-10 bg-indigo-50 border-indigo-500 text-indigo-600 relative inline-flex items-center px-4 py-2 border text-sm font-medium' : 'bg-white border-gray-300 text-gray-500 hover:bg-gray-50 relative inline-flex items-center px-4 py-2 border text-sm font-medium'">
             {{ page }}
           </button>
 
           <button class="relative inline-flex items-center px-2 py-2 rounded-r-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50"
-                  @click="nextPage"
-                  :disabled="currentPage >= lastPage">
+                  @click="incrementCurrentPage"
+                  :disabled="getCurrentPage >= Math.ceil(getTodos.length / 5)">
             <span class="sr-only">Next</span>
             <!-- Heroicon name: solid/chevron-right -->
             <svg class="h-5 w-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
@@ -48,25 +48,23 @@
 </template>
 
 <script>
+import {mapGetters, mapMutations} from "vuex";
+
 export default {
   name: "PaginationBar",
-  props:{
-    totalOfTasks: String,
-    totalOfCurrentTasks: String,
-    currentPage: Number,
-    lastPage: Number,
-    getPagination: Array
-  },
   methods:{
-    nextPage(){
-      this.$emit('next');
-    },
-    previousPage(){
-      this.$emit('previous');
-    },
-    changeCurrentPage(page){
-      this.$emit('changeCurrentPage', page);
-    }
+    ...mapMutations([
+      'incrementCurrentPage',
+      'decrementCurrentPage',
+      'setCurrentPage',
+    ]),
+  },
+  computed:{
+    ...mapGetters([
+      'getCurrentPage',
+      'getDisplayedTodos',
+      'getTodos'
+    ])
   }
 }
 </script>
