@@ -1,11 +1,17 @@
 <template>
   <div>
-    <p>{{ todo.description }}</p>
+    <div class="flex items-center">
+      <button :class="['flex', 'justify-center', 'py-1', 'px-2', 'mr-2', 'rounded', 'w-8', 'text-white', 'border-2', 'border-teal-800', todo.done ? 'bg-teal-800' : '']" @click="toggleTodoState(todo._id)">
+        <i :class="['h-4', todo.done ? 'fa fa-check' : '']"></i>
+      </button>
+      <p :class="['text-teal-800', 'text-medium', todo.done ? 'text-teal-800' : 'text-black']">{{ todo.description }}</p>
+    </div>
     <div class="flex">
-      <button class="flex p-1 ml-4 mr-2 rounded hover:text-white text-white bg-green-500 hover:bg-green-700" @click="toggleTodoState(todo._id)">{{ todo.done ? 'Pas fait' : 'Fait'}}</button>
-      <router-link :to="{name: 'todo', params: {id: todo._id}}" class="p-1 ml-2 rounded text-white bg-blue-500 hover:text-white hover:bg-blue-700">Modifier</router-link>
-      <button class="p-1 ml-2 rounded text-white bg-red-500 hover:text-white hover:bg-red-700" @click="deleteTodo(todo._id)">
-        <span>Supprimer</span>
+      <router-link :to="{name: 'todo', params: {id: todo._id}}" class="py-1 px-6 ml-2 rounded text-white bg-blue-500 hover:text-white hover:bg-blue-700">
+        <i class="fa fa-edit"></i>
+      </router-link>
+      <button class="py-1 px-3 ml-2 rounded text-white bg-red-500 hover:text-white hover:bg-red-700" @click="deleteTodo(todo._id)">
+        <i class="fa fa-trash"></i>
       </button>
     </div>
   </div>

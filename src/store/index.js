@@ -3,7 +3,6 @@ import Vuex from 'vuex';
 
 Vue.use(Vuex);
 
-const PAGE_SIZE = 5;
 const DISPLAY_LIMIT = 5;
 
 export default new Vuex.Store({
@@ -15,56 +14,30 @@ export default new Vuex.Store({
         getCurrentPage(state){
             return state.currentPage;
         },
-        getPagination(state){
+        getPagination: (state, getters) => (pagination) => {
+            const numberOfPages = Math.ceil(getters.getTodos.length / DISPLAY_LIMIT);
+            const allPages = Array.from({length: numberOfPages}, (_, i) => i + 1);
 
-            if(state.todos.length){
-
-                let pagination = [];
-
-                if(state.todos.length >= PAGE_SIZE){
-
-                    pagination.push(state.currentPage);
-
-                    if(state.currentPage - 1 > 0){
-                        pagination.unshift(state.currentPage - 1);
-
-                        if(state.currentPage - 2 > 0){
-                            pagination.unshift(state.currentPage - 2);
-
-                            if(state.currentPage + 1 !== state.lastPage){
-                                if(state.currentPage === state.lastPage){
-                                    pagination.unshift(state.currentPage - 3);
-                                    pagination.unshift(state.currentPage - 4);
-                                }else{
-                                    pagination.push(state.currentPage + 1);
-                                    pagination.push(state.currentPage + 2);
-                                }
-                            }else{
-                                pagination.unshift(state.currentPage - 3);
-                                pagination.push(state.currentPage + 1);
-                            }
-                        }else{
-                            for(let i = 1; i <= 3; i++){
-                                pagination.push(state.currentPage + i)
-                            }
-                        }
-                    }else{
-                        for(let i = 1; i <= 4; i++){
-                            pagination.push(state.currentPage + i)
-                        }
-                    }
-                }else{
-                    let keys = state.todos.keys();
-                    pagination = Array.from(keys).map(element => element + 1);
-                }
-
+            if(pagination.length === DISPLAY_LIMIT || (getters.getTodos <= 25 && pagination.length === numberOfPages)) {
                 return pagination;
+            }else if(!pagination.length){
+                pagination.push(getters.getCurrentPage);
+                return getters.getPagination(pagination);
             }else{
-                return [1];
+                const prevPage = pagination[0] - 1;
+                const nextPage = pagination.at(-1) + 1;
+
+                (allPages.indexOf(prevPage) > -1 && prevPage > 0) && pagination.unshift(prevPage);
+                (allPages.indexOf(nextPage) && nextPage <= numberOfPages) && pagination.push(nextPage);
+
+                return getters.getPagination(pagination);
             }
         },
         getTodos(state){
             return state.todos;
+        },
+        getTodo: (state) => (id) => {
+            return state.todos.filter(todo => todo._id === id)[0];
         },
         getDisplayedTodos(state, getters){
             return DISPLAY_LIMIT ? getters.getTodos.slice((state.currentPage - 1)*5,state.currentPage*DISPLAY_LIMIT) : getters.getTodos;
@@ -72,13 +45,16 @@ export default new Vuex.Store({
         getProgress(state){
             return Math.round((state.todos.filter(todo => todo.done).length / state.todos.length)*100);
         },
+        getLastTodos(state){
+            return state.todos.slice(0, 3);
+        },
     },
     mutations: {
         populateTodos(state, todos){
-            state.todos = todos;
+            state.todos = todos.reverse();
         },
         addTodo(state, todo){
-            state.todos.push(todo);
+            state.todos.unshift(todo);
         },
         deleteTodo(state, id){
             state.todos = state.todos.filter(todo => todo._id !== id);
@@ -95,8 +71,8 @@ export default new Vuex.Store({
         decrementCurrentPage(state){
             state.currentPage--;
         },
-        setCurrentPage(state, payload){
-            state.currentPage = payload.page;
+        setCurrentPage(state, page){
+            state.currentPage = page;
         },
     },
     actions: {

@@ -26,9 +26,9 @@
           </button>
 
           <!-- Current: "z-10 bg-indigo-50 border-indigo-500 text-indigo-600", Default: "bg-white border-gray-300 text-gray-500 hover:bg-gray-50 relative inline-flex items-center px-4 py-2 border text-sm font-medium" -->
-          <button v-for="page in Math.ceil(getTodos.length / 5)" :key="page" aria-current="page"
+          <button v-for="page in getPagination([])" :key="page" aria-current="page"
                   @click="setCurrentPage(page)"
-                  :class="page === getCurrentPage ? 'z-10 bg-indigo-50 border-indigo-500 text-indigo-600 relative inline-flex items-center px-4 py-2 border text-sm font-medium' : 'bg-white border-gray-300 text-gray-500 hover:bg-gray-50 relative inline-flex items-center px-4 py-2 border text-sm font-medium'">
+                  :class="page === getCurrentPage ? 'z-10 bg-teal-50 border-2 border-teal-800 text-teal-800 relative inline-flex items-center px-4 py-2 text-sm font-medium' : 'bg-white border-gray-300 text-gray-500 hover:bg-gray-50 relative inline-flex items-center px-4 py-2 border text-sm font-medium'">
             {{ page }}
           </button>
 
@@ -63,7 +63,8 @@ export default {
     ...mapGetters([
       'getCurrentPage',
       'getDisplayedTodos',
-      'getTodos'
+      'getTodos',
+      'getPagination'
     ])
   }
 }

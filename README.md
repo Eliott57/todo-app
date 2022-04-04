@@ -5,20 +5,17 @@
 npm install
 ```
 
+### Start nodemon server
+```
+nodemon server.js
+```
+
 ### Compiles and hot-reloads for development
 ```
 npm run serve
 ```
 
-### Compiles and minifies for production
+### Access to ToutDoux
 ```
-npm run build
+http://localhost:3001/
 ```
-
-### Lints and fixes files
-```
-npm run lint
-```
-
-### Customize configuration
-See [Configuration Reference](https://cli.vuejs.org/config/).
